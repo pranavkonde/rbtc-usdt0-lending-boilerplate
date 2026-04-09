@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
+  "overrides": {
+    "form-data": "^4.0.5",
+    "request": "npm:@cypress/request@3.0.10"
+  },
   "scripts": {
     "build": "hardhat compile",
     "demo": "hardhat run scripts/demo.js",
