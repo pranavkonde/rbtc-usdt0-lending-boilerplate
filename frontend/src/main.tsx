@@ -9,7 +9,7 @@ import { WagmiProvider } from 'wagmi';
 import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
 import { config } from './wagmi';
 
-// @ts-ignore
+// @ts-expect-error BigInt JSON serialization shim for RainbowKit / wallet tooling
 BigInt.prototype.toJSON = function () {
   return this.toString();
 };
