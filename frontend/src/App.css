@@ -5,23 +5,57 @@
   padding: 2rem;
 }
 
-header {
+.app-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 0;
   border-bottom: 1px solid var(--rs-gray-border);
   margin-bottom: 3rem;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .header-left {
   display: flex;
   align-items: center;
   gap: 1rem;
+  min-width: 0;
 }
 
 .app-logo {
   height: 40px;
+  flex-shrink: 0;
+}
+
+.header-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.header-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.header-subtitle {
+  font-size: 0.75rem;
+  color: var(--rs-text-secondary);
+  line-height: 1.2;
+}
+
+.network-banner {
+  margin: -2rem 0 2rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: var(--rs-warning-bg);
+  border: 1px solid var(--rs-orange);
+  color: var(--rs-orange);
+  font-size: 0.875rem;
+  line-height: 1.45;
 }
 
 .layout-column {

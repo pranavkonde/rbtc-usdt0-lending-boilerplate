@@ -24,13 +24,21 @@ cd frontend
 cp .env.example .env
 ```
 
-Then set the value:
+Then set at least:
 
 ```bash
 VITE_WALLET_CONNECT_PROJECT_ID=your_walletconnect_project_id_here
 ```
 
-You can obtain this value from the WalletConnect Cloud dashboard.
+Optional overrides (defaults live in `src/config/contracts.ts`):
+
+```bash
+VITE_LENDING_POOL_ADDRESS=...
+VITE_USDT0_ADDRESS=...
+VITE_ORACLE_ADDRESS=...
+```
+
+You can obtain the WalletConnect project id from the [WalletConnect Cloud](https://cloud.walletconnect.com/) dashboard.
 
 ## Contract configuration
 

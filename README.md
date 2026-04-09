@@ -34,64 +34,44 @@ A complete DeFi lending application on the Rootstock blockchain with a modern Re
 - **💱 Price Display:** Real-time RBTC and USDT0 price feeds
 
 ### Development Tools
-- **Vite:** Lightning-fast build tool and dev server
-- **Hardhat:** Complete Ethereum development environment
-- **React + TypeScript:** Modern UI library with type safety
-- **ethers.js:** Robust blockchain interaction library
-- **TailwindCSS:** Utility-first CSS framework
+- **Vite:** Frontend build tool and dev server
+- **Hardhat:** Smart contract development and deployment
+- **React + TypeScript:** UI and type safety
+- **RainbowKit + wagmi + viem:** Wallet connection and chain interactions (see `frontend/`)
 
 ## 🏗️ Project Structure
 
 ```
 /
-├── .config/                    # Configuration files
-├── .git/                       # Git repository
-├── artifacts/                  # Hardhat compilation artifacts
-├── cache/                      # Hardhat cache
 ├── contracts/                  # Solidity smart contracts
-│   ├── LendingPool.sol        # Main lending pool contract
-│   ├── MockUSDT0.sol          # USDT0 stablecoin implementation
-│   └── UmbrellaOracleAdapter.sol  # Price oracle adapter
-├── frontend/                   # React frontend application
-│   ├── node_modules/          # Frontend dependencies
-│   ├── public/                # Static assets
-│   ├── src/                   # Frontend source code
-│   │   ├── abi/              # Contract ABIs
-│   │   │   ├── ERC20.ts      # ERC20 token ABI
-│   │   │   └── LendingPool.ts # Lending pool ABI
-│   │   ├── assets/           # Images and static files
-│   │   │   └── react.svg     # React logo
-│   │   ├── components/       # React components
-│   │   │   ├── ActionCards.tsx    # Deposit/Borrow/Repay/Withdraw cards
-│   │   │   ├── Footer.tsx         # Application footer
-│   │   │   ├── Header.tsx         # Application header
-│   │   │   ├── HealthCard.tsx     # Health factor display
-│   │   │   └── StatsGrid.tsx      # Statistics grid
-│   │   ├── config/           # Configuration files
-│   │   │   ├── contracts.ts  # Contract addresses
-│   │   │   └── wagmi.ts      # Wagmi configuration
-│   │   ├── hooks/            # Custom React hooks
-│   │   │   └── useLendingPool.ts  # Lending pool hook
-│   │   ├── lib/              # Utility libraries
-│   │   ├── App.tsx           # Main application component
-│   │   ├── index.css         # Global styles
-│   │   └── main.tsx          # Application entry point
-│   ├── .env.example          # Environment variables template
-│   ├── .gitignore            # Git ignore rules
-│   ├── index.html            # HTML entry point
-│   ├── package.json          # Frontend dependencies
-│   ├── tsconfig.json         # TypeScript configuration
-│   └── vite.config.ts        # Vite configuration
-├── node_modules/              # Root dependencies
-├── scripts/                   # Deployment scripts
-│   └── demo-testnet.js       # Testnet deployment script
-├── .env.example              # Environment variables template
-├── .gitignore                # Git ignore rules
-├── hardhat.config.js         # Hardhat configuration
-├── package.json              # Root dependencies and scripts
-├── README.md                 # This file
-├── replit.md                 # Replit documentation
-└── SECURITY.MD               # Security documentation
+│   ├── LendingPool.sol
+│   ├── MockUSDT0.sol
+│   └── UmbrellaOracleAdapter.sol
+├── frontend/                   # React + RainbowKit dApp
+│   ├── public/
+│   ├── src/
+│   │   ├── abis/             # JSON contract ABIs (LendingPool, MockUSDT0)
+│   │   ├── assets/
+│   │   ├── components/       # UI (HeaderBar, cards, status, etc.)
+│   │   ├── config/
+│   │   │   └── contracts.ts  # Addresses from env + fallbacks
+│   │   ├── types/
+│   │   ├── utils/
+│   │   ├── App.tsx
+│   │   ├── App.css
+│   │   ├── index.css
+│   │   ├── main.tsx
+│   │   └── wagmi.ts          # RainbowKit / wagmi chains & transports
+│   ├── .env.example
+│   ├── index.html
+│   ├── package.json
+│   └── vite.config.ts
+├── scripts/
+│   └── demo-testnet.js
+├── hardhat.config.js
+├── package.json
+├── README.md
+└── SECURITY.MD
 ```
 
 ## 🚀 Getting Started
@@ -106,11 +86,11 @@ A complete DeFi lending application on the Rootstock blockchain with a modern Re
 
 ### Installation
 
-#### 1. Clone the Repository (if not forking)
+#### 1. Clone the repository
 
 ```bash
-git clone https://github.com/rythmern02/rsk-lending-frontend-boilerplate
-cd frontend
+git clone https://github.com/rsksmart/rbtc-usdt0-lending-boilerplate.git
+cd rbtc-usdt0-lending-boilerplate
 ```
 
 #### 2. Install Dependencies
@@ -139,9 +119,10 @@ cd frontend
 cp .env.example .env
 ```
 
-Edit the `frontend/.env` file with your deployed contract addresses:
+Edit `frontend/.env`: set a [WalletConnect Cloud](https://cloud.walletconnect.com/) project id, then adjust contract addresses if you deployed your own.
 
 ```env
+VITE_WALLET_CONNECT_PROJECT_ID=your_walletconnect_project_id_here
 VITE_LENDING_POOL_ADDRESS=0xC09Fe81b40DB2a013017bc2BcFfc718A25C45Cd3
 VITE_USDT0_ADDRESS=0xf7F1Fe4c7dea6401Ae4e486502832782247E7A0f
 VITE_ORACLE_ADDRESS=0xf9C3D70C33CBa0be571df7B9E3f0697C8ef40d69
@@ -173,7 +154,7 @@ cd frontend
 npm run dev
 ```
 
-The application will be available at `http://localhost:5001`
+Vite prints the local URL (by default `http://localhost:5173`).
 
 ### Production Build
 
@@ -317,7 +298,7 @@ npm run deploy        # Deploy to testnet
 
 ### Frontend Directory
 ```bash
-npm run dev           # Start development server (port 5001)
+npm run dev           # Start dev server (see terminal for port, often 5173)
 npm run build         # Build for production
 ```
 
@@ -376,14 +357,9 @@ npm install
 
 ---
 
-**Problem:** Port 5001 already in use
+**Problem:** Dev server port already in use
 
-**Solution:** 
-```bash
-# Kill the process using port 5001
-lsof -ti:5001 | xargs kill -9
-# Or change the port in vite.config.ts
-```
+**Solution:** Stop the other process or set a port in `frontend/vite.config.ts` (e.g. `server: { port: 5174 }`).
 
 ## 🤝 Contributing
 
