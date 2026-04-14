@@ -1,0 +1,6 @@
+{
+  "MockUSDT0": "0xc04B9B60c0cbA51A8F331cCaa08aee8E5aC443b1",
+  "Oracle": "0xF0e42A0BD4B2329A8E2ddb60C1900856c63e3ED0",
+  "LendingPool": "0x7f240d95BdE447340347e98EC96f4a112dFE6049",
+  "network": "rskTestnet"
+}

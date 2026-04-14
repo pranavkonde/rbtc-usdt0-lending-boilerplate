@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
+  "overrides": {
+    "form-data": "^4.0.5",
+    "request": "npm:@cypress/request@3.0.10"
+  },
   "scripts": {
     "build": "hardhat compile",
     "demo": "hardhat run scripts/demo.js",
@@ -10,11 +14,13 @@
     "test": "hardhat test"
   },
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "hardhat": "^2.22.7",
-    "dotenv": "^17.2.3"
+    "@nomicfoundation/hardhat-toolbox": "^7.0.0",
+    "dotenv": "^17.2.3",
+    "hardhat": "^3.1.12"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "4.9.6"
+    "@openzeppelin/contracts": "4.9.6",
+    "form-data": "^4.0.5",
+    "node-telegram-bot-api": "^0.67.0"
   }
 }

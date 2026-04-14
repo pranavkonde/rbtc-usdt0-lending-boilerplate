@@ -147,6 +147,16 @@ VITE_USDT0_ADDRESS=0xf7F1Fe4c7dea6401Ae4e486502832782247E7A0f
 VITE_ORACLE_ADDRESS=0xf9C3D70C33CBa0be571df7B9E3f0697C8ef40d69
 ```
 
+For Hardhat testnet deployment, copy `.env.example` → `.env` in the **repository root** and set:
+
+```text
+PRIVATE_KEY=0xYOUR_PRIVATE_KEY
+RSK_TESTNET_RPC=https://rpc.testnet.rootstock.io/<YOUR-API-KEY>
+RSK_MAINNET_RPC=https://rpc.rootstock.io/<YOUR-API-KEY>
+```
+
+You can get tRBTC from the [Rootstock Faucet](https://faucet.rootstock.io/); budget at least `0.03 tRBTC` for deployment and fees.
+
 ## 📦 Smart Contract Deployment
 
 Deploy the smart contracts to Rootstock testnet (if not already deployed):
