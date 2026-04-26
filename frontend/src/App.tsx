@@ -141,19 +141,18 @@ function App() {
   ]);
 
   const handleDeposit = useCallback(() => {
-    if (!depositAmount) {
-      return;
-    }
+    const trimmed = depositAmount.trim();
+    if (!trimmed) return;
 
     setValidationError(null);
 
-    if (Number(depositAmount) <= 0) {
+    if (parseFloat(trimmed) <= 0) {
       setValidationError('Amount must be greater than zero.');
       return;
     }
 
     try {
-      const value = parseEther(depositAmount);
+      const value = parseEther(trimmed);
       setLastAction('deposit');
       writeDeposit({
         address: LENDING_POOL_ADDRESS,
@@ -167,19 +166,18 @@ function App() {
   }, [depositAmount, writeDeposit]);
 
   const handleWithdraw = useCallback(() => {
-    if (!withdrawAmount) {
-      return;
-    }
+    const trimmed = withdrawAmount.trim();
+    if (!trimmed) return;
 
     setValidationError(null);
 
-    if (Number(withdrawAmount) <= 0) {
+    if (parseFloat(trimmed) <= 0) {
       setValidationError('Amount must be greater than zero.');
       return;
     }
 
     try {
-      const value = parseEther(withdrawAmount);
+      const value = parseEther(trimmed);
       setLastAction('withdraw');
       writeWithdraw({
         address: LENDING_POOL_ADDRESS,
@@ -193,19 +191,18 @@ function App() {
   }, [withdrawAmount, writeWithdraw]);
 
   const handleBorrow = useCallback(() => {
-    if (!borrowAmount) {
-      return;
-    }
+    const trimmed = borrowAmount.trim();
+    if (!trimmed) return;
 
     setValidationError(null);
 
-    if (Number(borrowAmount) <= 0) {
+    if (parseFloat(trimmed) <= 0) {
       setValidationError('Amount must be greater than zero.');
       return;
     }
 
     try {
-      const value = parseUnits(borrowAmount, USDT0_DECIMALS);
+      const value = parseUnits(trimmed, USDT0_DECIMALS);
       setLastAction('borrow');
       writeBorrow({
         address: LENDING_POOL_ADDRESS,
@@ -219,19 +216,18 @@ function App() {
   }, [borrowAmount, writeBorrow]);
 
   const handleApprove = useCallback(() => {
-    if (!repayAmount) {
-      return;
-    }
+    const trimmed = repayAmount.trim();
+    if (!trimmed) return;
 
     setValidationError(null);
 
-    if (Number(repayAmount) <= 0) {
+    if (parseFloat(trimmed) <= 0) {
       setValidationError('Amount must be greater than zero.');
       return;
     }
 
     try {
-      const value = parseUnits(repayAmount, USDT0_DECIMALS);
+      const value = parseUnits(trimmed, USDT0_DECIMALS);
       setLastAction('approve');
       writeApprove({
         address: USDT0_ADDRESS,
@@ -245,19 +241,18 @@ function App() {
   }, [repayAmount, writeApprove]);
 
   const handleRepay = useCallback(() => {
-    if (!repayAmount) {
-      return;
-    }
+    const trimmed = repayAmount.trim();
+    if (!trimmed) return;
 
     setValidationError(null);
 
-    if (Number(repayAmount) <= 0) {
+    if (parseFloat(trimmed) <= 0) {
       setValidationError('Amount must be greater than zero.');
       return;
     }
 
     try {
-      const value = parseUnits(repayAmount, USDT0_DECIMALS);
+      const value = parseUnits(trimmed, USDT0_DECIMALS);
       setLastAction('repay');
       writeRepay({
         address: LENDING_POOL_ADDRESS,

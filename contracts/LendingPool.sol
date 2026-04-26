@@ -16,8 +16,22 @@ contract LendingPool is Ownable, ReentrancyGuard {
     /// @dev Address(0) used to query the oracle for native RBTC price.
     address public constant RBTC_ASSET = address(0);
 
+    /// @dev Minimum delay before a proposed oracle change takes effect.
+    uint256 public constant ORACLE_TIMELOCK = 24 hours;
+
+    /// @dev Minimum allowed LTV — prevents instant mass-liquidation via governance.
+    uint256 public constant MIN_LTV_BPS = 1000; // 10%
+
+    /// @dev Liquidation bonus paid to liquidators on top of the repaid debt value.
+    uint256 public constant LIQUIDATION_BONUS_BPS = 500; // 5%
+
     IERC20 public immutable usdt0;
     IPriceOracle public oracle;
+
+    /// @dev Pending oracle address waiting for the timelock to expire.
+    address public pendingOracle;
+    /// @dev Timestamp after which pendingOracle can be activated.
+    uint256 public oracleUpdateTime;
 
     uint256 public immutable USDT0_SCALE; // 10 ** usdt0Decimals
     uint256 public ltvBps; // Loan To Value in basis points. e.g. 7000 = 70%
@@ -29,6 +43,8 @@ contract LendingPool is Ownable, ReentrancyGuard {
     event Borrowed(address indexed user, uint256 usdt0Amount);
     event Repaid(address indexed user, uint256 usdt0Amount);
     event Withdrawn(address indexed user, uint256 rbtcAmount);
+    event Liquidated(address indexed liquidator, address indexed borrower, uint256 repaidUsdt0, uint256 seizedRbtc);
+    event OracleProposed(address indexed pendingOracle, uint256 executeAfter);
     event OracleUpdated(address indexed newOracle);
     event LtvUpdated(uint256 newLtvBps);
 
@@ -47,14 +63,26 @@ contract LendingPool is Ownable, ReentrancyGuard {
 
     // ---------------------------- Admin ----------------------------
 
-    function setOracle(address _oracle) external onlyOwner {
+    /// @notice Propose a new oracle. Becomes active after ORACLE_TIMELOCK seconds.
+    function proposeOracle(address _oracle) external onlyOwner {
         require(_oracle != address(0), "ORACLE_0");
-        oracle = IPriceOracle(_oracle);
-        emit OracleUpdated(_oracle);
+        pendingOracle = _oracle;
+        oracleUpdateTime = block.timestamp + ORACLE_TIMELOCK;
+        emit OracleProposed(_oracle, oracleUpdateTime);
+    }
+
+    /// @notice Execute a previously proposed oracle once the timelock has elapsed.
+    function executeOracle() external onlyOwner {
+        require(pendingOracle != address(0), "NO_PENDING_ORACLE");
+        require(block.timestamp >= oracleUpdateTime, "TIMELOCK_ACTIVE");
+        oracle = IPriceOracle(pendingOracle);
+        emit OracleUpdated(pendingOracle);
+        pendingOracle = address(0);
+        oracleUpdateTime = 0;
     }
 
     function setLtvBps(uint256 _ltvBps) external onlyOwner {
-        require(_ltvBps > 0 && _ltvBps <= 9500, "LTV_RANGE");
+        require(_ltvBps >= MIN_LTV_BPS && _ltvBps <= 9500, "LTV_RANGE");
         ltvBps = _ltvBps;
         emit LtvUpdated(_ltvBps);
     }
@@ -106,6 +134,50 @@ contract LendingPool is Ownable, ReentrancyGuard {
         usdt0.safeTransferFrom(msg.sender, address(this), pay);
         debtUSDT0[msg.sender] = debt - pay;
         emit Repaid(msg.sender, pay);
+    }
+
+    // ------------------------- Liquidation ------------------------
+
+    /// @notice Liquidate an undercollateralised position.
+    /// @dev Caller repays `repayAmount` of borrower's USDT0 debt and receives
+    ///      equivalent RBTC collateral plus a LIQUIDATION_BONUS_BPS bonus.
+    ///      The seized RBTC is capped at the borrower's actual collateral balance.
+    function liquidate(address borrower, uint256 repayAmount) external nonReentrant {
+        require(borrower != address(0), "ZERO_BORROWER");
+        require(repayAmount > 0, "ZERO_REPAY");
+        require(healthFactorE18(borrower) < 1e18, "POSITION_SOLVENT");
+
+        uint256 debt = debtUSDT0[borrower];
+        uint256 pay = repayAmount > debt ? debt : repayAmount;
+
+        uint256 pRBTC  = oracle.getPrice(RBTC_ASSET);
+        uint256 pUSDT0 = oracle.getPrice(address(usdt0));
+
+        // USD value of the repaid debt (1e18 scale)
+        uint256 repaidUsdE18 = (pay * pUSDT0) / USDT0_SCALE;
+
+        // RBTC to seize = repaid USD value + bonus, converted to wei
+        uint256 seizeUsdE18   = (repaidUsdE18 * (10_000 + LIQUIDATION_BONUS_BPS)) / 10_000;
+        uint256 seizeRbtcWei  = (seizeUsdE18 * 1e18) / pRBTC;
+
+        // Cap at available collateral
+        uint256 availColl = collateralRBTC[borrower];
+        if (seizeRbtcWei > availColl) {
+            seizeRbtcWei = availColl;
+        }
+
+        // Update state before transfers
+        debtUSDT0[borrower]     = debt - pay;
+        collateralRBTC[borrower] = availColl - seizeRbtcWei;
+
+        // Pull USDT0 from liquidator
+        usdt0.safeTransferFrom(msg.sender, address(this), pay);
+
+        // Send seized RBTC to liquidator
+        (bool ok, ) = msg.sender.call{value: seizeRbtcWei}("");
+        require(ok, "SEND_FAILED");
+
+        emit Liquidated(msg.sender, borrower, pay, seizeRbtcWei);
     }
 
     // ------------------------- View helpers ------------------------

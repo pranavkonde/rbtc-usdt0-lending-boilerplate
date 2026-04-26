@@ -9,7 +9,11 @@
   },
   "scripts": {
     "build": "hardhat compile",
+    "compile": "hardhat compile",
     "demo": "hardhat run scripts/demo.js",
+    "deploy:local": "hardhat run scripts/demo.js --network localhost",
+    "deploy:testnet": "hardhat run scripts/demo-testnet.js --network rskTestnet",
+    "deploy:bot": "hardhat run scripts/deploy-for-bot.js --network rskTestnet",
     "local": "hardhat node",
     "test": "hardhat test"
   },
