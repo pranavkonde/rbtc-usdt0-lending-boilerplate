@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
+  "overrides": {
+    "form-data": "^4.0.5",
+    "request": "npm:@cypress/request@3.0.10"
+  },
   "scripts": {
     "build": "hardhat compile",
     "demo": "hardhat run scripts/demo.js",
@@ -15,6 +19,8 @@
     "hardhat": "^3.1.12"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "4.9.6"
+    "@openzeppelin/contracts": "4.9.6",
+    "form-data": "^4.0.5",
+    "node-telegram-bot-api": "^0.67.0"
   }
 }

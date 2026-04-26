@@ -7,13 +7,13 @@ module.exports = {
   networks: {
     hardhat: {},
     rskTestnet: {
-      url: process.env.RSK_TESTNET_RPC || "https://public-node.testnet.rsk.co",
+      url: process.env.RSK_TESTNET_RPC || "https://rpc.testnet.rootstock.io/<YOUR-API-KEY>",
       chainId: 31,
       gasPrice: 60000000,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : []
     },
     rskMainnet: {
-      url: process.env.RSK_MAINNET_RPC || "https://public-node.rsk.co",
+      url: process.env.RSK_MAINNET_RPC || "https://rpc.rootstock.io/<YOUR-API-KEY>",
       chainId: 30,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : []
     }
