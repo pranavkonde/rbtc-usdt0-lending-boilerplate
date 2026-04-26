@@ -39,7 +39,7 @@ async function deploy() {
 // ─── UmbrellaOracleAdapter ───────────────────────────────────────────────────
 
 describe("UmbrellaOracleAdapter", () => {
-  let owner, alice, oracle, usdt0addr;
+  let owner, alice, oracle, usdt0, usdt0addr;
 
   beforeEach(async () => {
     ({ owner, alice, oracle, usdt0 } = await deploy());
