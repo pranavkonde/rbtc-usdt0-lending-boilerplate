@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "overrides": {
+    "defu": "^6.1.5"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
